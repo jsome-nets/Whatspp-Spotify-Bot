@@ -15,3 +15,5 @@
 # vendor/
 
 .idea/
+.wwebjs_*/
+node_modules
