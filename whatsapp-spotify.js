@@ -10,10 +10,10 @@ const spotifyScopes = ['playlist-modify-public',
 let chats = { '358405686455-1597149862@g.us': true }
 const playlistId = "1RuXVd1wpfXxBlWsOSmGqX"
 let playlistContent = []
-const maxPlaylistLength = 10
+const maxPlaylistLength = 100
 
 
-const linkRegexp = new RegExp("https://open\.spotify\.com/track/[a-zA-Z1-9]+")
+const linkRegexp = new RegExp("https://open\.spotify\.com/track/[a-zA-Z0-9]+")
 /*******************
 * Spotify Client
 ******************/
@@ -66,7 +66,7 @@ app.get('/callback', (req, res) => {
     })
     .then( data => {
       for ( const { track } of data.body.items ) {
-        playlistContent[track.id] = true
+        playlistContent.push(track.id)
       }
       console.log(`Playlist has ${data.body.total} track(s)`)
       console.log("Logging into WhatsApp")
@@ -175,7 +175,7 @@ waClient.on('message_create', msg => {
 
 const upkeepList = () => {
   const removeTracks = []
-  while(playlistContent.length > 100) {
+  while(playlistContent.length > maxPlaylistLength) {
     removeTracks.push(playlistContent.shift())
   }
   if(removeTracks.length > 0){
