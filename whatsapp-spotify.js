@@ -7,7 +7,7 @@ const spotifyScopes = ['playlist-modify-public',
   'playlist-modify-private'
 ]
 
-let chats = {}
+let chats = { '358405686455-1597149862@g.us': true }
 const playlistId = "1RuXVd1wpfXxBlWsOSmGqX"
 let playlistContent = []
 const maxPlaylistLength = 10
