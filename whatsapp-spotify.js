@@ -7,7 +7,7 @@ const spotifyScopes = ['playlist-modify-public',
   'playlist-modify-private'
 ]
 
-const webservicePort = 80
+const webservicePort = 8080
 const servingUrl = `http://${process.env.PUBLIC_IP}:${webservicePort}/callback`
 
 let chats = { '358405686455-1597149862@g.us': true }
@@ -27,6 +27,7 @@ const spotifyApi = new SpotifyWebApi({
   clientSecret: process.env.SPOTIFY_SECRET,
 });
 
+console.log(servingUrl)
 console.log(process.env.SPOTIFY_ID, ' / ', process.env.SPOTIFY_SECRET)
 
 app.get('/callback', (req, res) => {
