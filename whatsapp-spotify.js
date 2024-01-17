@@ -7,19 +7,22 @@ const spotifyScopes = ['playlist-modify-public',
   'playlist-modify-private'
 ]
 
+const webservicePort = 80
+const servingUrl = `http://${process.env.PUBLIC_IP}:${webservicePort}/callback`
+
 let chats = { '358405686455-1597149862@g.us': true }
 const playlistId = "1RuXVd1wpfXxBlWsOSmGqX"
 let playlistContent = []
 const maxPlaylistLength = 100
 
-
 const linkRegexp = new RegExp("https://open\.spotify\.com/track/[a-zA-Z0-9]+")
+
 /*******************
 * Spotify Client
 ******************/
 const app = express();
 const spotifyApi = new SpotifyWebApi({
-  redirectUri: 'http://localhost:8080/callback',
+  redirectUri: servingUrl,
   clientId: process.env.SPOTIFY_ID,
   clientSecret: process.env.SPOTIFY_SECRET,
 });
@@ -78,7 +81,7 @@ app.get('/callback', (req, res) => {
     });
 });
 
-app.listen(8080, () => {
+app.listen(webservicePort, () => {
   let authUrl = spotifyApi.createAuthorizeURL(spotifyScopes)
   console.log(
     `HTTP Server up. Now go to ${authUrl} in your browser.`
