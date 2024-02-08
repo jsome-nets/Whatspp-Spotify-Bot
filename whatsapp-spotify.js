@@ -58,13 +58,7 @@ app.get('/callback', (req, res) => {
         `Sucessfully retreived Spotify token. Expires in ${expires_in} s.`
       );
       res.send('Success! You can now close the window.');
-      setInterval(async () => {
-        const data = await spotifyApi.refreshAccessToken();
-        const access_token = data.body['access_token'];
-
-        console.log('The Spotify token has been refreshed');
-        spotifyApi.setAccessToken(access_token);
-      }, expires_in / 2 * 1000);
+      setInterval( refreshAccessToken , expires_in / 2 * 1000);
 
       return spotifyApi.getPlaylistTracks(playlistId)
     })
@@ -84,10 +78,20 @@ app.get('/callback', (req, res) => {
 
 app.listen(webservicePort, () => {
   let authUrl = spotifyApi.createAuthorizeURL(spotifyScopes)
-  console.log(
-    `HTTP Server up. Now go to ${authUrl} in your browser.`
-  )
+  console.log(`HTTP Server up. Now go to:`)
+  console.log(authUrl)
 });
+
+const refreshAccessToken = () => {
+  spotifyApi.refreshAccessToken().then(data => {
+    const access_token = data.body['access_token'];
+    spotifyApi.setAccessToken(access_token);
+    console.log(`The Spotify token has been refreshed ${new Date().toUTCString()}`);
+  }).catch(error => {
+    console.error('Error refreshing Token:', error);
+    setTimeout(refreshAccessToken, 30000); // retry in 30 seconds
+  });
+}
 
 
 /*****************
@@ -184,7 +188,13 @@ const upkeepList = () => {
   }
   if(removeTracks.length > 0){
     console.log(`Removing old ${removeTracks.length} track(s) from playlist`)
-    spotifyApi.removeTracksFromPlaylist(playlistId, removeTracks.map( trackId => `spotify:track:${trackId}`))
+    let trackList = removeTracks.map(
+      (trackId, i) => {
+        return { uri: `spotify:track:${trackId}`, positions: [i] }
+      }
+    )
+    console.log(trackList)
+    spotifyApi.removeTracksFromPlaylist(playlistId, trackList )
     .then( () => {
       console.log('Upkeep done')
     })
