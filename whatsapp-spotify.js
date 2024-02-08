@@ -60,7 +60,7 @@ app.get('/callback', (req, res) => {
       res.send('Success! You can now close the window.');
       setInterval( refreshAccessToken , expires_in / 2 * 1000);
 
-      return spotifyApi.getPlaylistTracks(playlistId, { limit: maxPlaylistLength*2 })
+      return spotifyApi.getPlaylistTracks(playlistId, { limit: 100 })
     })
     .then( data => {
       for ( const { track } of data.body.items ) {
