@@ -67,6 +67,7 @@ app.get('/callback', (req, res) => {
         playlistContent.push(track.id)
       }
       console.log(`Playlist has ${data.body.total} track(s)`)
+      upkeepList();
       console.log("Logging into WhatsApp")
       waClient.initialize();
     })
