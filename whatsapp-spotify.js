@@ -107,6 +107,7 @@ const waClient = new Client({
 const reactions = {
   added: "🤖",
   robot: "🤖",
+  check: "✔️",
   started: "✅️",
   stopped: "🛑"
 }
@@ -131,7 +132,7 @@ waClient.on('message_create', msg => {
       case "start":
         chats[msg.from] = true
         console.log(`Started following chat ${msg.from}`)
-        msg.react(reactions.started).then(() => {
+        msg.react(reactions.check).then(() => {
           msg.reply(`${reactions.robot}: "I will start looking for Spotify links in this chat"`)
         })
         break;
@@ -158,13 +159,12 @@ waClient.on('message_create', msg => {
 
   if (!chats[msg.from]) return;
 
-  let links = msg.body.match(linkRegexp)
-  if (!links) return;
-  const url = new URL(links[0])
-  // "/track/{{trackID}}" -> "{{trackID}}"
-  const trackId = url.pathname.split('/')[2]
+  let url = hasSpotifyLink(msg.body)
+  if (!url) return;
+  const trackId = getTrackIdFromUrl(url)
   if (playlistContent.includes(trackId) ) {
     console.log(`Already on playlist, trackID: ${trackId}`)
+    msg.react(reactions.check)
   } else {
     console.log(`Not on playlist yet, trackID: ${trackId}`)
     spotifyApi.addTracksToPlaylist( playlistId, [`spotify:track:${trackId}`] )
@@ -181,6 +181,17 @@ waClient.on('message_create', msg => {
     });
   }
 });
+
+const hasSpotifyLink = (messageBody) => {
+  let directLinks = messageBody.match(linkRegexp)
+  if (directLinks) return new URL(directLinks[0])
+  else return false
+}
+
+const getTrackIdFromUrl = (spotifyUrl) => {
+  // "https://.open.spotify.com/track/{{trackID}}?fuu=bar" -> "{{trackID}}"
+  return spotifyUrl.pathname.split('/')[2]
+}
 
 const upkeepList = () => {
   const removeTracks = []
