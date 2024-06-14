@@ -102,8 +102,9 @@ const waClient = new Client({
   authStrategy: new LocalAuth(),
   webVersionCache: {
     type: 'remote',
-    /* remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2410.1.html', */
-    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2411.2.html',
+    /* remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2410.1.html',
+    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2411.2.html',*/
+    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
   },
 	puppeteer: {
 		args: ['--no-sandbox'],
