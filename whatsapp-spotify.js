@@ -15,7 +15,7 @@ const playlistId = "1RuXVd1wpfXxBlWsOSmGqX"
 let playlistContent = []
 const maxPlaylistLength = 100
 
-const wwebVersion = '2.3000.1014862683-alpha'
+const wwebVersion = '2.3000.1014840070-alpha'
 /* History
 2.2413.51-beta
 2.2410.1
