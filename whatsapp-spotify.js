@@ -35,12 +35,11 @@ const spotifyApi = new SpotifyWebApi({
 });
 
 console.log(servingUrl)
-console.log(process.env.SPOTIFY_ID, ' / ', process.env.SPOTIFY_SECRET)
+// console.log(process.env.SPOTIFY_ID, ' / ', process.env.SPOTIFY_SECRET)
 
 app.get('/callback', (req, res) => {
   const error = req.query.error;
   const code = req.query.code;
-  const state = req.query.state;
 
   if (error) {
     console.error('Callback Error:', error);
@@ -58,11 +57,11 @@ app.get('/callback', (req, res) => {
       spotifyApi.setAccessToken(access_token);
       spotifyApi.setRefreshToken(refresh_token);
 
-      console.log('access_token:', access_token);
-      console.log('refresh_token:', refresh_token);
+      // console.log('access_token:', access_token);
+      // console.log('refresh_token:', refresh_token);
 
       console.log(
-        `Sucessfully retreived Spotify token. Expires in ${expires_in} s.`
+        `Successfully retreived Spotify token. Expires in ${expires_in} s.`
       );
       res.send('Success! You can now close the window.');
       setInterval( refreshAccessToken , expires_in / 2 * 1000);
@@ -180,9 +179,11 @@ waClient.on('message_create', msg => {
     msg.react(reactions.check)
   } else {
     console.log(`Not on playlist yet, trackID: ${trackId}`)
-    spotifyApi.addTracksToPlaylist( playlistId, [`spotify:track:${trackId}`] )
+    //spotifyApi.addTracksToPlaylist( playlistId, [`spotify:track:${trackId}`] )
+    spotifyApi.addTracksToPlaylist( playlistId, [`spotify:track:${trackId}`], { position: 0 } )
     .then( () => {
-      playlistContent.push(trackId);
+      // playlistContent.push(trackId);
+      playlistContent.unshift(trackId);
       console.log(`Added to playlist, it now has ${playlistContent.length} tracks`)
       return msg.react(reactions.added)
     })
@@ -209,13 +210,15 @@ const getTrackIdFromUrl = (spotifyUrl) => {
 const upkeepList = () => {
   const removeTracks = []
   while(playlistContent.length > maxPlaylistLength) {
-    removeTracks.push(playlistContent.shift())
+    // removeTracks.push(playlistContent.shift())
+    removeTracks.push(playlistContent.pop())
   }
   if(removeTracks.length > 0){
     console.log(`Removing old ${removeTracks.length} track(s) from playlist`)
     let trackList = removeTracks.map(
       (trackId, i) => {
-        return { uri: `spotify:track:${trackId}`, positions: [i] }
+        // return { uri: `spotify:track:${trackId}`, positions: [i] }
+        return { uri: `spotify:track:${trackId}`, positions: [maxPlaylistLength - i] }
       }
     )
     console.log(trackList)
